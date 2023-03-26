@@ -1,66 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Word Game</title>
-  <style>
-    /* styles for the game interface */
-  </style>
-</head>
-<body>
-  <div id="game-info">
+html 
+head
+  title Word Game
+  body
+    <div id="game-info">
     <span id="current-letter"></span>
     <span id="remaining-time"></span>
-  </div>
-  <form id="word-form">
-    <input type="text" id="word-input" placeholder="Enter a word...">
-    <button type="submit">Submit</button>
-  </form>
-  <div id="submitted-words"></div>
-  <div id="scores"></div>
+    </div>
+    <form id="word-form">
+      <input type="text" id="word-input" placeholder="Enter a word...">
+      <button type="submit">Submit</button>
+    </form>
+    <div id="submitted-words"></div>
+    <div id="scores"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    //- <script>
+    //-   // connect to the server using Socket.IO
+    //-   const socket = io();
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    // connect to the server using Socket.IO
-    const socket = io();
+    //-   // when the game starts, display the current letter and remaining time
+    //-   socket.on('game-started', ({ currentLetter, remainingTime }) => {
+    //-     $('#current-letter').text(currentLetter);
+    //-     $('#remaining-time').text(remainingTime);
+    //-   });
 
-    // when the game starts, display the current letter and remaining time
-    socket.on('game-started', ({ currentLetter, remainingTime }) => {
-      $('#current-letter').text(currentLetter);
-      $('#remaining-time').text(remainingTime);
-    });
+    //-   // when a word is submitted, validate it and add it to the list of submitted words
+    //-   socket.on('word-submitted', ({ word, score }) => {
+    //-     const submittedWords = $('#submitted-words');
 
-    // when a word is submitted, validate it and add it to the list of submitted words
-    socket.on('word-submitted', ({ word, score }) => {
-      const submittedWords = $('#submitted-words');
+    //-     if (!word || word.charAt(0).toLowerCase() !== $('#current-letter').text()) {
+    //-       alert('Invalid word!');
+    //-       return;
+    //-     }
 
-      if (!word || word.charAt(0).toLowerCase() !== $('#current-letter').text()) {
-        alert('Invalid word!');
-        return;
-      }
+    //-     if (submittedWords.find(`li:contains(${word})`).length > 0) {
+    //-       alert('Word already submitted!');
+    //-       return;
+    //-     }
 
-      if (submittedWords.find(`li:contains(${word})`).length > 0) {
-        alert('Word already submitted!');
-        return;
-      }
+    //-     const li = $('<li></li>').text(`${word} (${score} points)`);
+    //-     submittedWords.append(li);
+    //-   });
 
-      const li = $('<li></li>').text(`${word} (${score} points)`);
-      submittedWords.append(li);
-    });
+    //-   // when the game ends, display the total score
+    //-   socket.on('game-ended', ({ totalScore }) => {
+    //-     $('#scores').text(`Total score: ${totalScore}`);
+    //-   });
 
-    // when the game ends, display the total score
-    socket.on('game-ended', ({ totalScore }) => {
-      $('#scores').text(`Total score: ${totalScore}`);
-    });
+    //-   // when the word form is submitted, send the word to the server to validate
+    //-   $('#word-form').submit((event) => {
+    //-     event.preventDefault();
 
-    // when the word form is submitted, send the word to the server to validate
-    $('#word-form').submit((event) => {
-      event.preventDefault();
+    //-     const word = $('#word-input').val();
 
-      const word = $('#word-input').val();
-
-      socket.emit('submit-word', { word });
-    });
-  </script>
-</body>
-</html>
+    //-     socket.emit('submit-word', { word });
+    //-   });
+    //- </script>

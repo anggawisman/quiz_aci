@@ -83,7 +83,9 @@ app.use((req, res, next) => {
 
 // 3) ROUTES
 // Pug Routes
-// app.use('/', viewRouter); // parent route
+app.use('/', (req, res) => {
+  res.status(200).render('overview');
+}); // parent route
 // API Routes is divide it to routes folder
 app.use('/api/v1/start', gameRouter); // parent route, it's also called mounting a new router
 
