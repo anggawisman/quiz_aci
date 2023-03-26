@@ -9,11 +9,8 @@ const hpp = require('hpp');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
-const tourRouter = require('./routes/tourRoutes');
-const reviewRouter = require('./routes/reviewRoutes');
-const userRouter = require('./routes/userRoutes');
+const gameRouter = require('./routes/gameRoutes');
 const viewRouter = require('./routes/viewRoutes');
-const mqttRouter = require('./routes/mqttRoutes');
 
 const app = express();
 
@@ -86,9 +83,9 @@ app.use((req, res, next) => {
 
 // 3) ROUTES
 // Pug Routes
-app.use('/', viewRouter); // parent route
+// app.use('/', viewRouter); // parent route
 // API Routes is divide it to routes folder
-app.use('/api/v1/users', userRouter); // parent route, it's also called mounting a new router
+app.use('/api/v1/start', gameRouter); // parent route, it's also called mounting a new router
 
 // HANDLE UNHANDLE ROUTE makesure this route on bot of others route
 app.all('*', (req, res, next) => {
