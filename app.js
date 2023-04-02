@@ -10,19 +10,19 @@ const hpp = require('hpp');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const gameRouter = require('./routes/gameRoutes');
-const viewRouter = require('./routes/viewRoutes');
+// const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
 // define template view engine
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
 console.log(process.env.NODE_ENV);
 
 // 1) GLOBAL MIDDLEWARE
 // Serving static files
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'views')));
 
 // Set Security HTTP headers
 app.use(helmet());
@@ -83,10 +83,13 @@ app.use((req, res, next) => {
 
 // 3) ROUTES
 // Pug Routes
-app.use('/', (req, res) => {
-  res.status(200).render('overview');
-}); // parent route
+// app.use('/', (req, res) => {
+//   res.status(200).render('overview');
+// }); // parent route
 // API Routes is divide it to routes folder
+app.get('/game', (req, res) => {
+  res.render('game', { title: 'nyobain' });
+});
 app.use('/api/v1/start', gameRouter); // parent route, it's also called mounting a new router
 
 // HANDLE UNHANDLE ROUTE makesure this route on bot of others route

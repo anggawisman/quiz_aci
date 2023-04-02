@@ -16,7 +16,12 @@ exports.gameStart = catchAsync(async (req, res, next) => {
       return res.status(500).send(err);
     }
 
-    res.json({
+    res.status(200).json({
+      currentLetter: game.currentLetter,
+      remainingTime: game.remainingTime,
+    });
+
+    io.emit('game-started', {
       currentLetter: game.currentLetter,
       remainingTime: game.remainingTime,
     });
@@ -32,7 +37,8 @@ function endGame(game) {
     return acc + word.score;
   }, 0);
 
-  Game.updateOne(
+  console.log(totalScore);
+  const gameUpdate = Game.updateOne(
     { _id: game._id },
     {
       remainingTime: 0,
@@ -44,6 +50,8 @@ function endGame(game) {
       }
     }
   );
+  console.log(gameUpdate);
+  console.log('game ended');
 
   io.emit('game-ended', {
     totalScore,
