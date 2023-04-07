@@ -56,15 +56,31 @@ const io = new Server(server);
 // socket io
 io.on('connection', (socket) => {
   socket.on('startGame', (data) => {
-    console.log('data => ', data);
+    if (data === 'start') {
+      game.save((err, game) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send(err);
+        } else {
+          console.log('di save');
+
+          io.emit('game-started', {
+            gameId: game._id,
+            currentLetter: game.currentLetter,
+          });
+
+          console.log(game);
+
+          return res.status(200).json({
+            currentLetter: game.currentLetter,
+          });
+        }
+      });
+    }
   });
   socket.on('findWord', async (data) => {
     console.log(data);
-    const findWord = await Word.findOne({ word: data }, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
+    const findWord = await Word.findOne({ word: data });
     if (!findWord) {
       socket.emit('wordFinded', {
         confirm: 'null',
@@ -72,12 +88,27 @@ io.on('connection', (socket) => {
     } else {
       socket.emit('wordFinded', {
         confirm: 'finded',
-        word: findWord.word,
-        score: findWord.score,
+        // word: findWord.word,
+        // score: findWord.score,
       });
+      Game.findOneAndUpdate(
+        { _id: data.game },
+        {
+          $push: {
+            submittedWords: findWord._id,
+          },
+        },
+        { new: true },
+        (err) => {
+          if (err) {
+            console.error(err);
+          }
+        }
+      );
     }
     console.log(findWord);
   });
+
   socket.on('submitWord', (data) => {
     console.log(data);
     const findWord = Word.findOne({ word: data });
@@ -97,6 +128,7 @@ io.on('connection', (socket) => {
       }
     );
   });
+
   console.log('socket connect!');
 });
 
@@ -106,31 +138,6 @@ app.set('views', 'views');
 
 app.get('/', (req, res) => {
   res.render('game', { title: 'Hayo ' });
-});
-app.post('/api/v1/start', (req, res) => {
-  game.save((err, game) => {
-    console.log('di save');
-    if (err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
-
-    res.status(200).json({
-      currentLetter: game.currentLetter,
-      remainingTime: game.remainingTime,
-    });
-
-    io.emit('game-started', {
-      gameId: game._id,
-      currentLetter: game.currentLetter,
-      remainingTime: game.remainingTime,
-    });
-    console.log(game);
-
-    setTimeout(() => {
-      endGame(game);
-    }, game.remainingTime * 1000);
-  });
 });
 
 // HANDLE ERROR OUTSIDE EXPRESS: UNDHANDLE REJECTION
@@ -143,32 +150,32 @@ process.on('unhandledRejection', (err) => {
   });
 });
 
-async function endGame(game) {
-  const totalScore = game.submittedWords.reduce((acc, word) => {
-    return acc + word.score;
-  }, 0);
+// async function endGame(game) {
+//   const totalScore = game.submittedWords.reduce((acc, word) => {
+//     return acc + word.score;
+//   }, 0);
 
-  console.log(totalScore);
-  const gameUpdate = await Game.findOneAndUpdate(
-    { _id: game._id },
-    {
-      remainingTime: 0,
-      // $set: { submittedWords: [] },
-      // $push: { pic_action: `${req.body.pic_action_update}` },
-    },
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    }
-  );
-  console.log('game ended');
-  io.emit('game-started', {
-    remainingTime: gameUpdate.remainingTime,
-    currentLetter: gameUpdate.currentLetter,
-  });
+//   console.log(totalScore);
+//   const gameUpdate = await Game.findOneAndUpdate(
+//     { _id: game._id },
+//     {
+//       remainingTime: 0,
+//       // $set: { submittedWords: [] },
+//       // $push: { pic_action: `${req.body.pic_action_update}` },
+//     },
+//     (err) => {
+//       if (err) {
+//         console.error(err);
+//       }
+//     }
+//   );
+//   console.log('game ended');
+//   io.emit('game-started', {
+//     remainingTime: gameUpdate.remainingTime,
+//     currentLetter: gameUpdate.currentLetter,
+//   });
 
-  io.emit('game-ended', {
-    totalScore,
-  });
-}
+//   io.emit('game-ended', {
+//     totalScore,
+//   });
+// }
