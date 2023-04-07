@@ -55,6 +55,19 @@
           aria-label="Close"
         ></button>
       </div>
+      <div
+        class="alert alert-danger alert-dismissible fade show"
+        role="alert"
+        id="gameSummary"
+      >
+        <strong>GAME SUMMARY</strong> nih
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
       <!-- <div
         class="alert alert-danger alert-dismissible fade show"
         role="alert"
@@ -91,6 +104,7 @@
       // connect socket io
       const socket = io();
       socket.on('connect', () => console.log('coba bisa ga'));
+      socket.on('bisa', () => console.log('coba bisa emit?'));
 
       // Get element Id
       const startContainer = document.getElementById('startContainer');
@@ -98,69 +112,62 @@
       const submitWord = document.getElementById('submitWord');
       const wordInput = document.getElementById('word-input');
       const alertConfirm = document.getElementById('alertConfirm');
-      const alertTime = document.getElementById('alertTime');
+      const gameSummary = document.getElementById('gameSummary');
       const countdownElement = document.getElementById('countdown');
-      const currentLetter = document.getElementById('current-letter').innerHTML;
+      let currentLetterSave;
 
       // display set
+      gameSummary.style.display = 'none';
       alertConfirm.style.display = 'none';
-      alertTime.style.display = 'none';
       startContainer.style.display = 'block';
       gameContainer.style.display = 'none';
 
       // Handle button when click start
-      startButton.addEventListener('click', async (e) => {
+      startButton.addEventListener('click', (e) => {
         e.preventDefault();
-        await socket.emit('startGame', 'start');
+        socket.emit('startGame', 'start');
         startContainer.style.display = 'none';
         gameContainer.style.display = 'block';
       });
 
-      // function for countdown
-      function updateCountdown() {
-        // get the countdown element from the DOM
-
-        // get the current time and the target time
-        const currentTime = new Date().getTime();
-        const targetTime = currentTime + 60000; // 60 seconds from now
-
-        // calculate the time remaining
-        const timeRemaining = targetTime - currentTime;
-
-        // if the countdown has ended, update the countdown element to show "Done!"
-        if (timeRemaining <= 0) {
-          countdownElement.innerHTML = 'Done!';
-          return;
-        }
-
-        // calculate the remaining seconds
-        const seconds = Math.floor(timeRemaining / 1000);
-
-        // update the countdown element to show the remaining time
-        countdownElement.innerHTML = `${seconds} seconds left`;
-
-        // schedule the next update to the countdown timer using setTimeout or setInterval
-        setTimeout(updateCountdown, 1000);
-      }
-
-      // socket for start the game
+      // socket for start the game;
       let gameIdSave;
       socket.on('game-started', ({ gameId, currentLetter }) => {
         gameIdSave = gameId;
+        currentLetterSave = currentLetter;
         document.getElementById('current-letter').innerHTML = currentLetter;
+
+        // TIMEOUT
+        countdownElement.innerHTML = `${seconds} seconds left`;
         updateCountdown();
       });
+
+      // SET TIME
+      let seconds = 10;
+
+      // function for countdown
+      function updateCountdown() {
+        seconds -= 1;
+        countdownElement.innerHTML = `${seconds} seconds left`;
+        if (seconds > 0) {
+          setTimeout(updateCountdown, 1000);
+        } else {
+          socket.emit('gameOver', { gameIdSave: gameIdSave });
+          console.log('gameOver', gameIdSave);
+          countdownElement.innerHTML = "Time's up!";
+        }
+      }
 
       // handle submit word
       submitWord.addEventListener('click', (e) => {
         e.preventDefault();
         console.log('wordInput', wordInput.value);
-        console.log('currentLetter', currentLetter);
+        console.log('currentLetter', currentLetterSave);
 
         const word = wordInput.value;
         const firstCharWordInput = word[0];
 
-        if (currentLetter === firstCharWordInput) {
+        if (currentLetterSave === firstCharWordInput) {
           // SOCKET EMIT TO SERVER FOR FIND THE WORLD
           socket.emit('findWord', { word: word, gameId: gameIdSave });
           wordInput.value = '';
@@ -174,9 +181,18 @@
       socket.on('wordFinded', ({ confirm }) => {
         if (confirm === 'finded') {
           console.log('kata ada di db lanjutkan!');
-        } else {
+        } else if (confirm === 'null') {
           console.log('kata tidak ada di db cari yang lain!');
+        } else if (confirm === 'duplicate') {
+          console.log('kata sudah ada, cari kata lain!');
         }
+      });
+
+      // HASIL DARI GAME
+      socket.on('gameSummary', ({ words, score }) => {
+        gameSummary.style.display = 'block';
+        console.log('words', words);
+        console.log('score', score);
       });
     </script>
   </body>
