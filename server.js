@@ -1,19 +1,10 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const express = require('express');
-const gameRouter = require('./routes/gameRoutes');
 const Game = require(`./models/gameModel`);
 const Word = require(`./models/wordModel`);
 const catchAsync = require('./utils/catchAsync');
 const app = express();
-
-const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-const currentLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-const game = new Game({
-  currentLetter,
-  remainingTime: 60,
-  submittedWords: [],
-});
 
 dotenv.config({ path: './.env' });
 const DB = process.env.DATABASE.replace(
@@ -55,26 +46,21 @@ const io = new Server(server);
 
 // socket io
 io.on('connection', (socket) => {
-  socket.on('startGame', (data) => {
+  socket.on('startGame', async (data) => {
     if (data === 'start') {
-      game.save((err, game) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).send(err);
-        } else {
-          console.log('di save');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      const currentLetter =
+        alphabet[Math.floor(Math.random() * alphabet.length)];
 
-          io.emit('game-started', {
-            gameId: game._id,
-            currentLetter: game.currentLetter,
-          });
+      const game = await Game.create({
+        currentLetter: currentLetter,
+        submittedWords: [],
+      });
 
-          console.log(game);
-
-          return res.status(200).json({
-            currentLetter: game.currentLetter,
-          });
-        }
+      console.log('ini sabi?', game);
+      socket.emit('game-started', {
+        gameId: game._id,
+        currentLetter: game.currentLetter,
       });
     }
   });
@@ -84,10 +70,14 @@ io.on('connection', (socket) => {
     console.log('gameId', gameId);
 
     const findWord = await Word.findOne({ word: word });
-
+    const game = await Game.findOne({ _id: gameId });
     if (!findWord) {
       socket.emit('wordFinded', {
         confirm: 'null',
+      });
+    } else if (game.submittedWords.indexOf(`${findWord._id}`) > -1) {
+      socket.emit('wordFinded', {
+        confirm: 'duplicate',
       });
     } else {
       socket.emit('wordFinded', {
@@ -96,9 +86,12 @@ io.on('connection', (socket) => {
         // score: findWord.score,
       });
 
+      const sumScore = game.score + findWord.score;
+
       Game.findOneAndUpdate(
         { _id: gameId },
         {
+          score: sumScore,
           $push: {
             submittedWords: findWord._id,
           },
@@ -112,6 +105,19 @@ io.on('connection', (socket) => {
       );
     }
     console.log(findWord);
+  });
+
+  socket.on('gameOver', async ({ gameIdSave }) => {
+    if (gameIdSave === null) {
+      console.log('iya nih');
+      return;
+    }
+    const game = await Game.findOne({ _id: gameIdSave });
+    socket.emit('gameSummary', {
+      words: game.submittedWords,
+      score: game.score,
+    });
+    console.log('gameOver', gameIdSave);
   });
 
   console.log('socket connect!');

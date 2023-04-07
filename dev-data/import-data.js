@@ -22,7 +22,7 @@ mongoose
   });
 
 //READ JSON FILE
-const words = JSON.parse(fs.readFileSync(`${__dirname}/words.json`, 'utf-8'));
+const words = JSON.parse(fs.readFileSync(`${__dirname}/baru.json`, 'utf-8'));
 
 // IMPORT DATA INTO DB
 const importData = async () => {

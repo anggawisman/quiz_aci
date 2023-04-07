@@ -12,11 +12,12 @@ const gameSchema = new mongoose.Schema({
       ref: 'Word',
     },
   ],
+  score: { type: Number, default: 0, max: 100 },
 });
 
-gameSchema.pre('save', function (next) {
-  console.log(this);
-});
+// gameSchema.pre('save', function (next) {
+//   console.log(this);
+// });
 
 const Game = mongoose.model('Game', gameSchema);
 module.exports = Game;
