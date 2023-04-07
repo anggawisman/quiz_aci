@@ -144,7 +144,9 @@
       }
 
       // socket for start the game
-      socket.on('game-started', ({ currentLetter }) => {
+      let gameIdSave;
+      socket.on('game-started', ({ gameId, currentLetter }) => {
+        gameIdSave = gameId;
         document.getElementById('current-letter').innerHTML = currentLetter;
         updateCountdown();
       });
@@ -160,11 +162,20 @@
 
         if (currentLetter === firstCharWordInput) {
           // SOCKET EMIT TO SERVER FOR FIND THE WORLD
-          socket.emit('findWord', {word:word, gameId:});
+          socket.emit('findWord', { word: word, gameId: gameIdSave });
           wordInput.value = '';
         } else {
           console.log('salah tuh kata-nya');
           wordInput.value = '';
+        }
+      });
+
+      // SOCKET ON LISTENING IS THERE ANY WORD SAME ON DB
+      socket.on('wordFinded', ({ confirm }) => {
+        if (confirm === 'finded') {
+          console.log('kata ada di db lanjutkan!');
+        } else {
+          console.log('kata tidak ada di db cari yang lain!');
         }
       });
     </script>

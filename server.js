@@ -78,9 +78,13 @@ io.on('connection', (socket) => {
       });
     }
   });
-  socket.on('findWord', async (data) => {
-    console.log(data);
-    const findWord = await Word.findOne({ word: data });
+
+  socket.on('findWord', async ({ word, gameId }) => {
+    console.log('word', word);
+    console.log('gameId', gameId);
+
+    const findWord = await Word.findOne({ word: word });
+
     if (!findWord) {
       socket.emit('wordFinded', {
         confirm: 'null',
@@ -91,8 +95,9 @@ io.on('connection', (socket) => {
         // word: findWord.word,
         // score: findWord.score,
       });
+
       Game.findOneAndUpdate(
-        { _id: data.game },
+        { _id: gameId },
         {
           $push: {
             submittedWords: findWord._id,
@@ -107,26 +112,6 @@ io.on('connection', (socket) => {
       );
     }
     console.log(findWord);
-  });
-
-  socket.on('submitWord', (data) => {
-    console.log(data);
-    const findWord = Word.findOne({ word: data });
-    console.log('data submit => ', data);
-    Game.findOneAndUpdate(
-      { _id: data.game },
-      {
-        $push: {
-          submittedWords: findWord._id,
-        },
-      },
-      { new: true },
-      (err) => {
-        if (err) {
-          console.error(err);
-        }
-      }
-    );
   });
 
   console.log('socket connect!');

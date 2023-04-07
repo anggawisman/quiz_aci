@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 const gameSchema = new mongoose.Schema({
   currentLetter: String,
-  remainingTime: Number,
+  active: {
+    type: Boolean,
+    default: true,
+  },
   submittedWords: [
     {
       type: mongoose.Schema.ObjectId,
