@@ -5,6 +5,7 @@ const gameRouter = require('./routes/gameRoutes');
 const Game = require(`./models/gameModel`);
 const Word = require(`./models/wordModel`);
 const catchAsync = require('./utils/catchAsync');
+const app = express();
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const currentLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
@@ -19,8 +20,6 @@ const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
-
-const app = express();
 
 // HANDLE ERROR CATCHING UNCAUGHT EXCEPTIONS
 process.on('uncaughtException', (err) => {
@@ -50,7 +49,7 @@ const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
-// const server = http.createServer(app);
+
 const { Server } = require('socket.io');
 const io = new Server(server);
 
@@ -80,12 +79,14 @@ io.on('connection', (socket) => {
     console.log(findWord);
   });
   socket.on('submitWord', (data) => {
+    console.log(data);
+    const findWord = Word.findOne({ word: data });
     console.log('data submit => ', data);
     Game.findOneAndUpdate(
       { _id: data.game },
       {
         $push: {
-          submittedWords: { word: `${data.word}`, score: `${data.score}` },
+          submittedWords: findWord._id,
         },
       },
       { new: true },

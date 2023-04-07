@@ -1,16 +1,19 @@
 const mongoose = require('mongoose');
-const Word = require('./wordModel');
 
-const GameSchema = new mongoose.Schema({
+const gameSchema = new mongoose.Schema({
   currentLetter: String,
   remainingTime: Number,
   submittedWords: [
     {
-      word: String,
-      score: Number,
+      type: mongoose.Schema.ObjectId,
+      ref: 'Word',
     },
   ],
 });
 
-const Game = mongoose.model('Game', GameSchema);
+gameSchema.pre('save', function (next) {
+  console.log(this);
+});
+
+const Game = mongoose.model('Game', gameSchema);
 module.exports = Game;

@@ -16,6 +16,8 @@ exports.gameStart = catchAsync(async (req, res, next) => {
       return res.status(500).send(err);
     }
 
+    res.cookie('game', game._id, { httpOnly: true });
+
     res.status(200).json({
       currentLetter: game.currentLetter,
       remainingTime: game.remainingTime,

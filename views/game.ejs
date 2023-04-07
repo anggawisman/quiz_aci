@@ -101,11 +101,7 @@
       startContainer.style.display = 'block';
       gameContainer.style.display = 'none';
 
-      let gameIdSave = '';
-
-      socket.on('game-started', ({ gameId, currentLetter, remainingTime }) => {
-        console.log(gameId);
-        gameIdSave = gameId;
+      socket.on('game-started', ({ currentLetter, remainingTime }) => {
         document.getElementById('current-letter').innerHTML = currentLetter;
         document.getElementById('remaining-time').innerHTML = remainingTime;
         if (remainingTime == 0) {
