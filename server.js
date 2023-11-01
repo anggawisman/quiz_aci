@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
         alphabet[Math.floor(Math.random() * alphabet.length)];
 
       const game = await Game.create({
-        currentLetter: 'a',
+        currentLetter: currentLetter,
         submittedWords: [],
       });
 
