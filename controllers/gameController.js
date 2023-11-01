@@ -2,9 +2,9 @@ const Game = require(`../models/gameModel`);
 const catchAsync = require('../utils/catchAsync');
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-const currentLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+// const currentLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
 const game = new Game({
-  currentLetter,
+  currentLetter: 'a',
   remainingTime: 60,
   submittedWords: [],
 });
@@ -55,7 +55,7 @@ function endGame(game) {
   console.log(gameUpdate);
   console.log('game ended');
 
-  io.emit('game-ended', {
+  io.emit('game-ended',
     totalScore,
-  });
+  );
 }

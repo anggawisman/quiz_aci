@@ -41,6 +41,10 @@ const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
+// ---------------------- SOCKET IO CONNECT ---------------------------- //
+// const socketController = require('./controllers/socketController')
+// socketController.initSocketIO(server, [process.env.SERVER_URL + ":" + process.env.FRONTEND_PORT])
+
 const { Server } = require('socket.io');
 const io = new Server(server);
 
@@ -53,7 +57,7 @@ io.on('connection', (socket) => {
         alphabet[Math.floor(Math.random() * alphabet.length)];
 
       const game = await Game.create({
-        currentLetter: currentLetter,
+        currentLetter: 'a',
         submittedWords: [],
       });
 
@@ -74,16 +78,18 @@ io.on('connection', (socket) => {
     if (!findWord) {
       socket.emit('wordFinded', {
         confirm: 'null',
+        oldWord: word,
       });
     } else if (game.submittedWords.indexOf(`${findWord._id}`) > -1) {
       socket.emit('wordFinded', {
         confirm: 'duplicate',
+        oldWord: word,
       });
     } else {
       socket.emit('wordFinded', {
         confirm: 'finded',
-        // word: findWord.word,
-        // score: findWord.score,
+        word: findWord.word,
+        score: findWord.score,
       });
 
       const sumScore = game.score + findWord.score;
@@ -112,9 +118,19 @@ io.on('connection', (socket) => {
       console.log('iya nih');
       return;
     }
+    let dataWords = []
     const game = await Game.findOne({ _id: gameIdSave });
+
+    for (const resData of game.submittedWords) {
+      const word = await Word.findOne({ _id: resData });
+
+      if (!dataWords.includes(word.word)) {
+        dataWords.push(word.word);
+      }
+    }
+
     socket.emit('gameSummary', {
-      words: game.submittedWords,
+      words: dataWords,
       score: game.score,
     });
     console.log('gameOver', gameIdSave);

@@ -13,12 +13,23 @@
     />
   </head>
   <body>
+    <header class="border-bottom lh-1 py-3">
+      <div class="row flex-nowrap justify-content-between align-items-center">
+        <div class="col-4 pt-1">
+        </div>
+        <div class="col-4 text-center">
+          <h1  class="fw-bold">Permainan Kata</h2>
+        </div>
+        <div class="col-4 d-flex justify-content-end align-items-center">
+        </div>
+      </div>
+    </header>
     <div
       class="container w-25 mt-4 text-center"
       style="height: auto"
       id="startContainer"
     >
-      <h2>Permainan Kata</h2>
+      
       <form
         method="post"
         action="http://localhost:3004/api/v1/start"
@@ -37,10 +48,10 @@
       style="height: auto"
       id="gameContainer"
     >
-      <h2>Permainan Kata telah dimulai!</h2>
+      <h3 id="permainan" class="fw-bold">Permainan Kata telah dimulai!</h3>
       <div id="game-info">
-        <span id="current-letter"></span>
-        <span id="remaining-time"></span>
+        <h4 id="current-letter-depan">Huruf: <mark class="text-danger" id="current-letter"></mark></h4> 
+        <h4 class="text-danger"><div id="countdown"></div></h4>
       </div>
       <div
         class="alert alert-danger alert-dismissible fade show"
@@ -55,19 +66,7 @@
           aria-label="Close"
         ></button>
       </div>
-      <div
-        class="alert alert-danger alert-dismissible fade show"
-        role="alert"
-        id="gameSummary"
-      >
-        <strong>GAME SUMMARY</strong> nih
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-      </div>
+      
       <!-- <div
         class="alert alert-danger alert-dismissible fade show"
         role="alert"
@@ -81,7 +80,28 @@
           aria-label="Close"
         ></button>
       </div> -->
-      <div id="countdown"></div>
+
+      <div
+        class="alert alert-primary alert-dismissible fade show"
+        role="alert"
+        id="gameSummary"
+      >
+        <strong>RINGKASAN PERMAINAN</strong>
+        <p>
+          Total nilai: <span id="total-score"></span> <br/> 
+          Kata yang benar: <span id="total-words"></span>
+        </p>
+        <!-- <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button> -->
+
+        <button type="button"  class="btn btn-primary w-100" onClick="window.location.reload()">
+          Ulang
+       </button>
+      </div>
 
       <form id="word-form">
         <input type="text" id="word-input" placeholder="Enter a word..." />
@@ -110,10 +130,17 @@
       const startContainer = document.getElementById('startContainer');
       const gameContainer = document.getElementById('gameContainer');
       const submitWord = document.getElementById('submitWord');
+      const submittedWord = document.getElementById('submitted-words');
       const wordInput = document.getElementById('word-input');
+      const wordForm = document.getElementById('word-form');
       const alertConfirm = document.getElementById('alertConfirm');
       const gameSummary = document.getElementById('gameSummary');
+      const totalScore = document.getElementById('total-score');
+      const scores = document.getElementById('scores');
       const countdownElement = document.getElementById('countdown');
+
+
+      const currentLetter = document.getElementById('current-letter-depan');
       let currentLetterSave;
 
       // display set
@@ -129,6 +156,8 @@
         startContainer.style.display = 'none';
         gameContainer.style.display = 'block';
       });
+      
+      
 
       // socket for start the game;
       let gameIdSave;
@@ -137,8 +166,9 @@
         currentLetterSave = currentLetter;
         document.getElementById('current-letter').innerHTML = currentLetter;
 
+        document.cookie = `gameId = ${gameId}`
         // TIMEOUT
-        countdownElement.innerHTML = `${seconds} seconds left`;
+        countdownElement.innerHTML = `${seconds} detik lagi`;
         updateCountdown();
       });
 
@@ -148,13 +178,13 @@
       // function for countdown
       function updateCountdown() {
         seconds -= 1;
-        countdownElement.innerHTML = `${seconds} seconds left`;
+        countdownElement.innerHTML = `${seconds} detik lagi`;
         if (seconds > 0) {
           setTimeout(updateCountdown, 1000);
         } else {
           socket.emit('gameOver', { gameIdSave: gameIdSave });
           console.log('gameOver', gameIdSave);
-          countdownElement.innerHTML = "Time's up!";
+          countdownElement.style.display = 'none'
         }
       }
 
@@ -178,7 +208,8 @@
       });
 
       // SOCKET ON LISTENING IS THERE ANY WORD SAME ON DB
-      socket.on('wordFinded', ({ confirm }) => {
+      socket.on('wordFinded', ({ confirm, oldWord, word, score }) => {
+        console.log({oldWord})
         if (confirm === 'finded') {
           console.log('kata ada di db lanjutkan!');
         } else if (confirm === 'null') {
@@ -186,11 +217,22 @@
         } else if (confirm === 'duplicate') {
           console.log('kata sudah ada, cari kata lain!');
         }
+
+        document.getElementById('scores').innerHTML = score == undefined ? 0 : score ;
+        document.getElementById('submitted-words').innerHTML = word == undefined ? `tidak ada kata: ${oldWord}` : word;
       });
 
       // HASIL DARI GAME
       socket.on('gameSummary', ({ words, score }) => {
-        gameSummary.style.display = 'block';
+        gameSummary.style.display = 'block';  
+        currentLetter.style.display = 'none';
+        wordForm.style.display = 'none';
+        submittedWord.style.display = 'none';
+        scores.style.display = 'none';
+
+        document.getElementById('permainan').innerHTML = `Permainan Kata telah berakhir, yuk main lagi!`;
+        document.getElementById('total-words').innerHTML = words;
+        document.getElementById('total-score').innerHTML = score;
         console.log('words', words);
         console.log('score', score);
       });

@@ -26,7 +26,7 @@ socket.on('word-submitted', ({ word, score }) => {
 });
 
 // when the game ends, display the total score
-socket.on('game-ended', ({ totalScore }) => {
+socket.on('game-ended', (totalScore) => {
   $('#scores').text(`Total score: ${totalScore}`);
 });
 
