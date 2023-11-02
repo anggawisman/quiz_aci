@@ -27,7 +27,13 @@ const words = JSON.parse(fs.readFileSync(`${__dirname}/baru.json`, 'utf-8'));
 // IMPORT DATA INTO DB
 const importData = async () => {
   try {
-    await Word.create(words);
+    // await Word.create(words);
+    for (const wordSatuan of words) {
+      if (wordSatuan.word !== null) {
+        const cek = await Word.findOneAndUpdate({ word: wordSatuan.word }, { word: wordSatuan.word, score: wordSatuan.score }, { upsert: true, new: true });
+        console.log({ cek })
+      }
+    }
     console.log('Data has been imported successfuly!');
   } catch (err) {
     console.log(err);
