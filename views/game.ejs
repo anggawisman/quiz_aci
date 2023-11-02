@@ -1,73 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%=title %></title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-  </head>
-  <body>
-    <header class="border-bottom lh-1 py-3">
-      <div class="row flex-nowrap justify-content-between align-items-center">
-        <div class="col-4 pt-1">
-        </div>
-        <div class="col-4 text-center">
-          <h1  class="fw-bold">Permainan Kata</h2>
-        </div>
-        <div class="col-4 d-flex justify-content-end align-items-center">
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%=title %></title>
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+</head>
+
+<body>
+  <header class="border-bottom lh-1 py-3">
+    <div class="row flex-nowrap justify-content-between align-items-center">
+      <div class="col-4 pt-1">
       </div>
-    </header>
-    <div
-      class="container w-25 mt-4 text-center"
-      style="height: auto"
-      id="startContainer"
-    >
-      
-      <form
-        method="post"
-        action="http://localhost:3004/api/v1/start"
-        id="start"
-      >
-        <input
-          type="submit"
-          class="btn btn-danger w-100"
-          value="Mulai Permainan"
-          id="startButton"
-        />
-      </form>
+      <div class="col-4 text-center">
+        <h1 class="fw-bold">Permainan Kata</h2>
+      </div>
+      <div class="col-4 d-flex justify-content-end align-items-center">
+      </div>
     </div>
-    <div
-      class="container w-25 mt-4 text-center"
-      style="height: auto"
-      id="gameContainer"
-    >
-      <h3 id="permainan" class="fw-bold">Permainan Kata telah dimulai!</h3>
-      <div id="game-info">
-        <h4 id="current-letter-depan">Huruf: <mark class="text-danger" id="current-letter"></mark></h4> 
-        <h4 class="text-danger"><div id="countdown"></div></h4>
-      </div>
-      <div
-        class="alert alert-danger alert-dismissible fade show"
-        role="alert"
-        id="alertConfirm"
-      >
-        <strong>Kata tidak terdaftar</strong> coba lagi!
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-      </div>
-      
-      <!-- <div
+  </header>
+
+  <div class="container w-25 mt-4 text-center" style="height: auto" id="startContainer">
+
+    <form method="post" action="http://localhost:3004/api/v1/start" id="start">
+      <input type="submit" class="btn btn-danger w-100" value="Mulai Permainan" id="startButton" />
+    </form>
+  </div>
+
+  <div class="container w-25 mt-4 text-center" style="height: auto" id="gameContainer">
+    <h3 id="permainan" class="fw-bold">Permainan Kata telah dimulai!</h3>
+    <div id="game-info">
+      <h4 id="current-letter-depan">Huruf: <mark class="text-danger" id="current-letter"></mark></h4>
+      <h4 class="text-danger">
+        <div id="countdown"></div>
+      </h4>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertConfirm">
+      <strong>Kata tidak terdaftar</strong> coba lagi!
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- <div
         class="alert alert-danger alert-dismissible fade show"
         role="alert"
         id="alertTime"
@@ -81,161 +61,268 @@
         ></button>
       </div> -->
 
-      <div
-        class="alert alert-primary alert-dismissible fade show"
-        role="alert"
-        id="gameSummary"
-      >
-        <strong>RINGKASAN PERMAINAN</strong>
-        <p>
-          Total nilai: <span id="total-score"></span> <br/> 
-          Kata yang benar: <span id="total-words"></span>
-        </p>
-        <!-- <button
+    <div class="alert alert-primary alert-dismissible fade show" role="alert" id="gameSummary">
+      <strong>RINGKASAN PERMAINAN</strong>
+      <p>
+        Total nilai: <span id="total-score"></span> <br />
+        Kata yang benar: <span id="total-words"></span>
+      </p>
+      <!-- <button
           type="button"
           class="btn-close"
           data-bs-dismiss="alert"
           aria-label="Close"
         ></button> -->
 
-        <button type="button"  class="btn btn-primary w-100" onClick="window.location.reload()">
-          Ulang
-       </button>
-      </div>
-
-      <form id="word-form">
-        <input type="text" id="word-input" placeholder="Enter a word..." />
-        <button class="btn btn-danger" id="submitWord" type="submit">
-          Submit
-        </button>
-      </form>
-      <div id="submitted-words"></div>
-      <div id="scores"></div>
+      <button type="button" class="btn btn-primary w-100" onClick="window.location.reload()">
+        Ulang
+      </button>
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
-    ></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <form id="word-form">
+      <input type="text" id="word-input" placeholder="Enter a word..." />
+      <button class="btn btn-danger" id="submitWord" type="submit">
+        Submit
+      </button>
+    </form>
+    <div id="submitted-words"></div>
+    <div id="scores"></div>
+  </div>
 
-    <script>
-      // connect socket io
-      const socket = io();
-      socket.on('connect', () => console.log('coba bisa ga'));
-      socket.on('bisa', () => console.log('coba bisa emit?'));
-
-      // Get element Id
-      const startContainer = document.getElementById('startContainer');
-      const gameContainer = document.getElementById('gameContainer');
-      const submitWord = document.getElementById('submitWord');
-      const submittedWord = document.getElementById('submitted-words');
-      const wordInput = document.getElementById('word-input');
-      const wordForm = document.getElementById('word-form');
-      const alertConfirm = document.getElementById('alertConfirm');
-      const gameSummary = document.getElementById('gameSummary');
-      const totalScore = document.getElementById('total-score');
-      const scores = document.getElementById('scores');
-      const countdownElement = document.getElementById('countdown');
+  <div class="container mt-4 text-center" style="height: auto" id="tableContainer">
+    <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Cari kata ..." title="Type in a name"> -->
+    <table id="myTable">
+      <thead>
+        <tr class="header">
+          <th>Kata</th>
+          <th>Skor</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 
 
-      const currentLetter = document.getElementById('current-letter-depan');
-      let currentLetterSave;
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
 
-      // display set
-      gameSummary.style.display = 'none';
-      alertConfirm.style.display = 'none';
-      startContainer.style.display = 'block';
-      gameContainer.style.display = 'none';
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-      // Handle button when click start
-      startButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        socket.emit('startGame', 'start');
-        startContainer.style.display = 'none';
-        gameContainer.style.display = 'block';
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+
+  <script>
+    $(document).ready(function() {
+      let wordsData
+      socket.emit('takeData', 'start');
+
+      socket.on('takeDataKirim', ({
+        words
+      }) => {
+        var table = document.getElementById("myTableBody");
+        wordsData = words
+        // words.forEach(item => {
+        //   const row = table.insertRow(-1);
+        //   const cell1 = row.insertCell(0);
+        //   const cell2 = row.insertCell(1);
+
+        //   cell1.innerHTML = item.word;
+        //   cell2.innerHTML = item.score;
+        // });
+        $("#myTable").DataTable({
+          data: wordsData,
+          columns: [{
+              data: 'word'
+            },
+            {
+              data: 'score'
+            },
+          ]
+        });
       });
-      
-      
 
-      // socket for start the game;
-      let gameIdSave;
-      socket.on('game-started', ({ gameId, currentLetter }) => {
-        gameIdSave = gameId;
-        currentLetterSave = currentLetter;
-        document.getElementById('current-letter').innerHTML = currentLetter;
+      console.log({
+        table
+      })
+    })
+    // connect socket io
+    const socket = io();
+    // socket.on('connect', () => console.log('coba bisa ga'));
+    // socket.on('bisa', () => console.log('coba bisa emit?'));
 
-        document.cookie = `gameId = ${gameId}`
-        // TIMEOUT
-        countdownElement.innerHTML = `${seconds} detik lagi`;
-        updateCountdown();
-      });
+    // function takeData() {
+    //   socket.emit('takeData', 'start');
 
-      // SET TIME
-      let seconds = 10;
+    //   socket.on('takeDataKirim', ({
+    //     words
+    //   }) => {
+    //     var table = document.getElementById("myTableBody");
 
-      // function for countdown
-      function updateCountdown() {
-        seconds -= 1;
-        countdownElement.innerHTML = `${seconds} detik lagi`;
-        if (seconds > 0) {
-          setTimeout(updateCountdown, 1000);
-        } else {
-          socket.emit('gameOver', { gameIdSave: gameIdSave });
-          console.log('gameOver', gameIdSave);
-          countdownElement.style.display = 'none'
+    //     words.forEach(item => {
+    //       const row = table.insertRow(-1);
+    //       const cell1 = row.insertCell(0);
+    //       const cell2 = row.insertCell(1);
+
+    //       cell1.innerHTML = item.word;
+    //       cell2.innerHTML = item.score;
+    //     });
+    //   });
+
+
+    //   console.log({
+    //     table
+    //   })
+    // }
+
+    function myFunction() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
         }
       }
+    }
 
-      // handle submit word
-      submitWord.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log('wordInput', wordInput.value);
-        console.log('currentLetter', currentLetterSave);
+    // Get element Id
+    const startContainer = document.getElementById('startContainer');
+    const gameContainer = document.getElementById('gameContainer');
+    const submitWord = document.getElementById('submitWord');
+    const submittedWord = document.getElementById('submitted-words');
+    const wordInput = document.getElementById('word-input');
+    const wordForm = document.getElementById('word-form');
+    const alertConfirm = document.getElementById('alertConfirm');
+    const gameSummary = document.getElementById('gameSummary');
+    const totalScore = document.getElementById('total-score');
+    const scores = document.getElementById('scores');
+    const countdownElement = document.getElementById('countdown');
 
-        const word = wordInput.value;
-        const firstCharWordInput = word[0];
 
-        if (currentLetterSave === firstCharWordInput) {
-          // SOCKET EMIT TO SERVER FOR FIND THE WORLD
-          socket.emit('findWord', { word: word, gameId: gameIdSave });
-          wordInput.value = '';
-        } else {
-          console.log('salah tuh kata-nya');
-          wordInput.value = '';
-        }
-      });
+    const currentLetter = document.getElementById('current-letter-depan');
+    let currentLetterSave;
 
-      // SOCKET ON LISTENING IS THERE ANY WORD SAME ON DB
-      socket.on('wordFinded', ({ confirm, oldWord, word, score }) => {
-        console.log({oldWord})
-        if (confirm === 'finded') {
-          console.log('kata ada di db lanjutkan!');
-        } else if (confirm === 'null') {
-          console.log('kata tidak ada di db cari yang lain!');
-        } else if (confirm === 'duplicate') {
-          console.log('kata sudah ada, cari kata lain!');
-        }
+    // display set
+    gameSummary.style.display = 'none';
+    alertConfirm.style.display = 'none';
+    startContainer.style.display = 'block';
+    gameContainer.style.display = 'none';
 
-        document.getElementById('scores').innerHTML = score == undefined ? 0 : score ;
-        document.getElementById('submitted-words').innerHTML = word == undefined ? `tidak ada kata: ${oldWord}` : word;
-      });
+    // Handle button when click start
+    startButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      socket.emit('startGame', 'start');
+      startContainer.style.display = 'none';
+      gameContainer.style.display = 'block';
+    });
 
-      // HASIL DARI GAME
-      socket.on('gameSummary', ({ words, score }) => {
-        gameSummary.style.display = 'block';  
-        currentLetter.style.display = 'none';
-        wordForm.style.display = 'none';
-        submittedWord.style.display = 'none';
-        scores.style.display = 'none';
 
-        document.getElementById('permainan').innerHTML = `Permainan Kata telah berakhir, yuk main lagi!`;
-        document.getElementById('total-words').innerHTML = words;
-        document.getElementById('total-score').innerHTML = score;
-        console.log('words', words);
-        console.log('score', score);
-      });
-    </script>
-  </body>
+
+    // socket for start the game;
+    let gameIdSave;
+    socket.on('game-started', ({
+      gameId,
+      currentLetter
+    }) => {
+      gameIdSave = gameId;
+      currentLetterSave = currentLetter;
+      document.getElementById('current-letter').innerHTML = currentLetter;
+
+      document.cookie = `gameId = ${gameId}`
+      // TIMEOUT
+      countdownElement.innerHTML = `${seconds} detik lagi`;
+      updateCountdown();
+    });
+
+    // SET TIME
+    let seconds = 10;
+
+    // function for countdown
+    function updateCountdown() {
+      seconds -= 1;
+      countdownElement.innerHTML = `${seconds} detik lagi`;
+      if (seconds > 0) {
+        setTimeout(updateCountdown, 1000);
+      } else {
+        socket.emit('gameOver', {
+          gameIdSave: gameIdSave
+        });
+        // console.log('gameOver', gameIdSave);
+        countdownElement.style.display = 'none'
+      }
+    }
+
+    // handle submit word
+    submitWord.addEventListener('click', (e) => {
+      e.preventDefault();
+      // console.log('wordInput', wordInput.value);
+      // console.log('currentLetter', currentLetterSave);
+
+      const word = wordInput.value;
+      const firstCharWordInput = word[0];
+
+      if (currentLetterSave === firstCharWordInput) {
+        // SOCKET EMIT TO SERVER FOR FIND THE WORLD
+        socket.emit('findWord', {
+          word: word,
+          gameId: gameIdSave
+        });
+        wordInput.value = '';
+      } else {
+        // console.log('salah tuh kata-nya');
+        wordInput.value = '';
+      }
+    });
+
+    // SOCKET ON LISTENING IS THERE ANY WORD SAME ON DB
+    socket.on('wordFinded', ({
+      confirm,
+      oldWord,
+      word,
+      score
+    }) => {
+      // console.log({oldWord})
+      if (confirm === 'finded') {
+        // console.log('kata ada di db lanjutkan!');
+      } else if (confirm === 'null') {
+        // console.log('kata tidak ada di db cari yang lain!');
+      } else if (confirm === 'duplicate') {
+        // console.log('kata sudah ada, cari kata lain!');
+      }
+
+      document.getElementById('scores').innerHTML = score == undefined ? 0 : score;
+      document.getElementById('submitted-words').innerHTML = word == undefined ? `tidak ada kata: ${oldWord}` : word;
+    });
+
+    // HASIL DARI GAME
+    socket.on('gameSummary', ({
+      words,
+      score
+    }) => {
+      gameSummary.style.display = 'block';
+      currentLetter.style.display = 'none';
+      wordForm.style.display = 'none';
+      submittedWord.style.display = 'none';
+      scores.style.display = 'none';
+
+      document.getElementById('permainan').innerHTML = `Permainan Kata telah berakhir, yuk main lagi!`;
+      document.getElementById('total-words').innerHTML = words;
+      document.getElementById('total-score').innerHTML = score;
+      // console.log('words', words);
+      // console.log('score', score);
+    });
+  </script>
+</body>
+
 </html>

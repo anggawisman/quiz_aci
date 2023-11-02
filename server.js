@@ -136,6 +136,15 @@ io.on('connection', (socket) => {
     console.log('gameOver', gameIdSave);
   });
 
+  socket.on('takeData', async ({ gameIdSave }) => {
+
+    const words = await Word.find({}, { _id: 0, __v: 0 });
+
+    socket.emit('takeDataKirim', {
+      words
+    });
+  });
+
   console.log('socket connect!');
 });
 
@@ -144,7 +153,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.get('/', (req, res) => {
-  res.render('game', { title: 'Hayo ' });
+  res.render('game', { title: 'Permainan Kata ' });
 });
 
 // HANDLE ERROR OUTSIDE EXPRESS: UNDHANDLE REJECTION
